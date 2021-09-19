@@ -9,14 +9,14 @@
   import keymap from "./assets/manoonchai.svg"
   import keymapData from "./lib/manoonchai"
 
-  const url = "https://single-page-svelte.vercel.app"
+  const url = "https://manoonchai-heatmap.vercel.app"
   const title = "Single Page Svelte"
 
-  const menuItems = [{ name: "Github", url: "https://github.com/narze/single-page-svelte" }]
+  const menuItems = [{ name: "Github", url: "https://github.com/manoonchai/heatmap" }]
 
-  const description = "Build a single page app with Svelte, quickly."
+  const description = "See heatmap of Thai keyboard layouts"
   const imageUrl =
-    "https://raw.githubusercontent.com/narze/timelapse/master/projects/single-page-svelte_home.png"
+    "https://raw.githubusercontent.com/narze/timelapse/master/projects/heatmap_home.png"
   const gtagId = null
   let heatmapInstance
 
@@ -42,7 +42,7 @@
   let heatmapData = []
   let coords = []
 
-  $: inputChars = input.split("") // ["ไ", "ท", "ย", "ย", "ง", "เจ", "ร", "ิ", "ญ"]
+  $: inputChars = input.split("")
   $: {
     inputChars
     coords = []
@@ -68,8 +68,6 @@
 
     if (x != undefined && y != undefined && heatmapInstance) {
       heatmapData[x][y] += 1
-      // heatmapInstance.addData({ ...indexToCoordinate(x, y), value: 100 })
-      // coords.push({ ...indexToCoordinate(x, y), value: 20 })
     }
   })
 
@@ -82,8 +80,6 @@
       })
     })
 
-    console.log({ heatmapData, coords, max: max(heatmapData) })
-
     heatmapInstance?.setData({ max: max(heatmapData) * 1.3, min: 0, data: coords })
   }
 
@@ -95,7 +91,6 @@
       y: 48 + (60 + 4.5) * row,
     }
 
-    console.log({ co })
     return co
   }
 
@@ -111,20 +106,20 @@
     return max
   }
 
-  function softmax(arr) {
-    let sum = 0
-    arr.forEach(function (row) {
-      return row.forEach(function (value) {
-        sum += Math.exp(value)
-      })
-    })
+  // function softmax(arr) {
+  //   let sum = 0
+  //   arr.forEach(function (row) {
+  //     return row.forEach(function (value) {
+  //       sum += Math.exp(value)
+  //     })
+  //   })
 
-    return arr.map(function (row) {
-      return row.map(function (value) {
-        return Math.exp(value) / sum
-      })
-    })
-  }
+  //   return arr.map(function (row) {
+  //     return row.map(function (value) {
+  //       return Math.exp(value) / sum
+  //     })
+  //   })
+  // }
 </script>
 
 <Kofi name="narze" label="Support Me" />
