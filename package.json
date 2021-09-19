@@ -17,6 +17,7 @@
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/svelte": "^3.0.3",
     "@tsconfig/svelte": "^2.0.1",
+    "@types/heatmap.js": "^2.0.37",
     "@types/jest": "^27.0",
     "babel-jest": "^27.0",
     "jest": "^27.0",
@@ -32,6 +33,7 @@
     "vite": "^2.4.4"
   },
   "dependencies": {
+    "heatmap.js": "https://github.com/ionata/heatmap.js.git",
     "svelte-share-buttons-component": "^1.3.2",
     "twind": "^0.16.16"
   }

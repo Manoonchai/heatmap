@@ -1216,12 +1216,24 @@
   dependencies:
     "@babel/types" "^7.3.0"
 
+"@types/geojson@*":
+  version "7946.0.8"
+  resolved "https://registry.yarnpkg.com/@types/geojson/-/geojson-7946.0.8.tgz#30744afdb385e2945e22f3b033f897f76b1f12ca"
+  integrity sha512-1rkryxURpr6aWP7R786/UQOkJ3PcpQiWkAXBmdWc7ryFWqN6a4xfK7BtjXvFBKO9LjQ+MWQSWxYeZX1OApnArA==
+
 "@types/graceful-fs@^4.1.2":
   version "4.1.5"
   resolved "https://registry.yarnpkg.com/@types/graceful-fs/-/graceful-fs-4.1.5.tgz#21ffba0d98da4350db64891f92a9e5db3cdb4e15"
   integrity sha512-anKkLmZZ+xm4p8JWBf4hElkM4XR+EZeA2M9BAkkTldmcyDY4mbdIJnRghDJH3Ov5ooY7/UAoENtmdMSkaAd7Cw==
   dependencies:
     "@types/node" "*"
+
+"@types/heatmap.js@^2.0.37":
+  version "2.0.37"
+  resolved "https://registry.yarnpkg.com/@types/heatmap.js/-/heatmap.js-2.0.37.tgz#f8c003925b288fa39f926990a123fefeb831ccba"
+  integrity sha512-Zd1m6WaRSPnXcR1fETGnIvyRSE2rcQK21S0zIU/LWjwsrNyKBA3xdckrQhQpIdG+UTeu7WODv237s30Ky7IVXg==
+  dependencies:
+    "@types/leaflet" "^0"
 
 "@types/istanbul-lib-coverage@*", "@types/istanbul-lib-coverage@^2.0.0", "@types/istanbul-lib-coverage@^2.0.1":
   version "2.0.3"
@@ -1249,6 +1261,13 @@
   dependencies:
     jest-diff "^27.0.0"
     pretty-format "^27.0.0"
+
+"@types/leaflet@^0":
+  version "0.7.35"
+  resolved "https://registry.yarnpkg.com/@types/leaflet/-/leaflet-0.7.35.tgz#5eb474dee4ce4b126292cd0ba4db5e09190649a2"
+  integrity sha512-BK+pa9a9dYC1qJyYQulqkRI9N+ZnV4ycAmNSOUmom7C6xaAdmrhOoiCiDMhSQklyjPpasy3KWRTkTRTJuDbBSw==
+  dependencies:
+    "@types/geojson" "*"
 
 "@types/node@*":
   version "16.7.1"
@@ -2116,6 +2135,10 @@ has@^1.0.3:
   integrity sha512-f2dvO0VU6Oej7RkWJGrehjbzMAjFp5/VKPp5tTpWIV4JHHZK1/BxbFRtf/siA2SWTe09caDmVtYYzWEIbBS4zw==
   dependencies:
     function-bind "^1.1.1"
+
+"heatmap.js@https://github.com/ionata/heatmap.js.git":
+  version "2.0.5"
+  resolved "https://github.com/ionata/heatmap.js.git#1452fc74fb3442f5f74b43394fddd06057fc387b"
 
 html-encoding-sniffer@^2.0.1:
   version "2.0.1"
