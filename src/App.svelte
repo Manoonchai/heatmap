@@ -26,20 +26,20 @@
     const configMnc = {
       container: document.getElementById("heatmap-container-manoonchai"),
       radius: 60,
-      maxOpacity: 0.4,
+      maxOpacity: 0.6,
       minOpacity: 0,
-      blur: 0.6,
-      gradient: { 0.45: "rgb(0,0,255)", 0.55: "rgb(0,255,255)", 0.65: "rgb(0,255,0)", 0.95: "yellow", 1.0: "rgb(255,0,0)"}
+      blur: 0.5,
+      gradient: { 0.45: "rgb(0,0,255)", 0.55: "rgb(0,255,255)", 0.65: "rgb(0,255,0)", 0.95: "yellow", 1.0: "rgb(255,0,0)"},
     }
     heatmapInstanceMnc = heatmap.create(configMnc)
 
     const configKed = {
       container: document.getElementById("heatmap-container-kedmanee"),
       radius: 60,
-      maxOpacity: 0.4,
+      maxOpacity: 0.6,
       minOpacity: 0,
-      blur: 0.6,
-      gradient: { 0.45: "rgb(0,0,255)", 0.55: "rgb(0,255,255)", 0.65: "rgb(0,255,0)", 0.95: "yellow", 1.0: "rgb(255,0,0)"}
+      blur: 0.5,
+      gradient: { 0.45: "rgb(0,0,255)", 0.55: "rgb(0,255,255)", 0.65: "rgb(0,255,0)", 0.95: "yellow", 1.0: "rgb(255,0,0)"},
     }
     heatmapInstanceKed = heatmap.create(configKed)
   })
