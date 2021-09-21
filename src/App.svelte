@@ -29,7 +29,13 @@
       maxOpacity: 0.6,
       minOpacity: 0,
       blur: 0.5,
-      gradient: { 0.45: "rgb(0,0,255)", 0.55: "rgb(0,255,255)", 0.65: "rgb(0,255,0)", 0.95: "yellow", 1.0: "rgb(255,0,0)"},
+      gradient: {
+        0.45: "rgb(0,0,255)",
+        0.55: "rgb(0,255,255)",
+        0.65: "rgb(0,255,0)",
+        0.95: "yellow",
+        1.0: "rgb(255,0,0)",
+      },
     }
     heatmapInstanceMnc = heatmap.create(configMnc)
 
@@ -39,7 +45,13 @@
       maxOpacity: 0.6,
       minOpacity: 0,
       blur: 0.5,
-      gradient: { 0.45: "rgb(0,0,255)", 0.55: "rgb(0,255,255)", 0.65: "rgb(0,255,0)", 0.95: "yellow", 1.0: "rgb(255,0,0)"},
+      gradient: {
+        0.45: "rgb(0,0,255)",
+        0.55: "rgb(0,255,255)",
+        0.65: "rgb(0,255,0)",
+        0.95: "yellow",
+        1.0: "rgb(255,0,0)",
+      },
     }
     heatmapInstanceKed = heatmap.create(configKed)
   })
@@ -139,8 +151,8 @@ Source : https://manoonchai.com
     let xStart = [48, 146, 162, 194]
 
     const co = {
-      x: xStart[row] + (60 + 4.5) * col,
-      y: 48 + (60 + 4.5) * row,
+      x: Math.round(xStart[row] + (60 + 4.5) * col),
+      y: Math.round(48 + (60 + 4.5) * row),
     }
 
     return co
