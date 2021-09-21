@@ -25,19 +25,21 @@
   onMount(() => {
     const configMnc = {
       container: document.getElementById("heatmap-container-manoonchai"),
-      radius: 80,
-      maxOpacity: 0.9,
+      radius: 60,
+      maxOpacity: 0.6,
       minOpacity: 0,
-      blur: 0.6,
+      blur: 0.5,
+      gradient: { 0.45: "rgb(0,0,255)", 0.55: "rgb(0,255,255)", 0.65: "rgb(0,255,0)", 0.95: "yellow", 1.0: "rgb(255,0,0)"},
     }
     heatmapInstanceMnc = heatmap.create(configMnc)
 
     const configKed = {
       container: document.getElementById("heatmap-container-kedmanee"),
-      radius: 80,
-      maxOpacity: 0.9,
+      radius: 60,
+      maxOpacity: 0.6,
       minOpacity: 0,
-      blur: 0.6,
+      blur: 0.5,
+      gradient: { 0.45: "rgb(0,0,255)", 0.55: "rgb(0,255,255)", 0.65: "rgb(0,255,0)", 0.95: "yellow", 1.0: "rgb(255,0,0)"},
     }
     heatmapInstanceKed = heatmap.create(configKed)
   })
@@ -118,7 +120,7 @@ Source : https://manoonchai.com
       })
     })
 
-    heatmapInstanceMnc?.setData({ max: max(heatmapMnc) * 1.3, min: 0, data: coordsMnc })
+    heatmapInstanceMnc?.setData({ max: max(heatmapMnc), min: 0, data: coordsMnc })
   }
 
   $: {
@@ -130,7 +132,7 @@ Source : https://manoonchai.com
       })
     })
 
-    heatmapInstanceKed?.setData({ max: max(heatmapKed) * 1.3, min: 0, data: coordsKed })
+    heatmapInstanceKed?.setData({ max: max(heatmapKed), min: 0, data: coordsKed })
   }
 
   function indexToCoordinate(row: number, col: number) {
