@@ -176,7 +176,6 @@ Source : https://manoonchai.com
 
 <Kofi name="narze" label="Support Me" />
 <Menu items={menuItems} />
-<Social {url} {title} />
 <Head {title} {description} {url} {imageUrl} {gtagId} />
 
 <main class="w-full h-screen flex flex-col justify-center items-center">
