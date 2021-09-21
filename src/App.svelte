@@ -106,7 +106,7 @@ Source : https://manoonchai.com
       })
     })
 
-    if (x != undefined && y != undefined && heatmapInstanceMnc) {
+    if (x != undefined && y != undefined && heatmapInstanceKed) {
       heatmapKed[x][y] += 1
     }
   })
