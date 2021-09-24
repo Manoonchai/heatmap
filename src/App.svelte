@@ -3,9 +3,8 @@
   import Head from "./lib/Head.svelte"
   import Kofi from "./lib/Kofi.svelte"
   import Menu from "./lib/Menu.svelte"
-  import Social from "./lib/Social.svelte"
   import { onMount } from "svelte"
-  import heatmap from "heatmap.js"
+  import heatmap, { Heatmap } from "heatmap.js"
   import manoonchaiSvg from "./assets/manoonchai.svg"
   import manoonchaiKeymap from "./lib/manoonchai"
   import kedmaneeSvg from "./assets/kedmanee.svg"
@@ -22,10 +21,32 @@
   const gtagId = null
   let heatmapInstanceMnc, heatmapInstanceKed
 
+  let manoonchaiImageElement: HTMLElement
+  let kedmaneeImageElement: HTMLElement
+  let heatmapCanvasManoonchai: HTMLElement
+  let heatmapCanvasKedmanee: HTMLElement
+
+  // const keymaps = [
+  //   {
+  //     name: "Manoonchai",
+  //     keymap: manoonchaiKeymap,
+  //     heatmap: heatmapInstanceMnc,
+  //     container: heatmapCanvasManoonchai,
+  //     image: manoonchaiImageElement,
+  //   },
+  //   {
+  //     name: "Kedmanee",
+  //     keymap: kedmaneeKeymap,
+  //     heatmap: heatmapInstanceKed,
+  //     container: heatmapCanvasKedmanee,
+  //     image: kedmaneeImageElement,
+  //   },
+  // ]
+
   onMount(() => {
     const configMnc = {
-      container: document.getElementById("heatmap-container-manoonchai"),
-      radius: 60,
+      container: heatmapCanvasManoonchai,
+      radius: 35,
       maxOpacity: 0.6,
       minOpacity: 0,
       blur: 0.5,
@@ -40,8 +61,8 @@
     heatmapInstanceMnc = heatmap.create(configMnc)
 
     const configKed = {
-      container: document.getElementById("heatmap-container-kedmanee"),
-      radius: 60,
+      container: heatmapCanvasKedmanee,
+      radius: 35,
       maxOpacity: 0.6,
       minOpacity: 0,
       blur: 0.5,
@@ -54,6 +75,8 @@
       },
     }
     heatmapInstanceKed = heatmap.create(configKed)
+
+    redraw()
   })
 
   let input = `Credit : https://www.pangpond.com/กุ้งอบวุ้นเส้น
@@ -88,14 +111,25 @@
 
   let heatmapMnc = []
   let heatmapKed = []
-  let coordsMnc = []
-  let coordsKed = []
 
-  $: inputChars = input.split("")
+  let inputChars
+
   $: {
-    inputChars
-    coordsMnc = []
-    coordsKed = []
+    input
+    redraw()
+  }
+
+  function redraw() {
+    inputChars = input.split("")
+    resetHeatmaps()
+
+    populateHeatmap(manoonchaiKeymap, heatmapInstanceMnc, heatmapMnc)
+    populateHeatmap(kedmaneeKeymap, heatmapInstanceKed, heatmapKed)
+    drawHeatmap(heatmapCanvasManoonchai, manoonchaiImageElement, heatmapInstanceMnc, heatmapMnc)
+    drawHeatmap(heatmapCanvasKedmanee, kedmaneeImageElement, heatmapInstanceKed, heatmapKed)
+  }
+
+  function resetHeatmaps() {
     heatmapMnc = [
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -110,70 +144,80 @@
     ]
   }
 
-  $: inputChars.forEach((char, _index) => {
-    let x, y
+  function populateHeatmap(keymap, heatmapInstance, heatmap) {
+    inputChars.forEach((char, _index) => {
+      let x, y
 
-    manoonchaiKeymap.keys.forEach((row, rowIndex) => {
-      row.forEach((keys, keyIndex) => {
-        if (keys.includes(char)) {
-          x = rowIndex
-          y = keyIndex
-        }
+      keymap.keys.forEach((row, rowIndex) => {
+        row.forEach((keys, keyIndex) => {
+          if (keys.includes(char)) {
+            x = rowIndex
+            y = keyIndex
+          }
+        })
       })
+
+      if (x != undefined && y != undefined && heatmapInstance) {
+        heatmap[x][y] += 1
+      }
     })
-
-    if (x != undefined && y != undefined && heatmapInstanceMnc) {
-      heatmapMnc[x][y] += 1
-    }
-  })
-
-  $: inputChars.forEach((char, _index) => {
-    let x, y
-
-    kedmaneeKeymap.keys.forEach((row, rowIndex) => {
-      row.forEach((keys, keyIndex) => {
-        if (keys.includes(char)) {
-          x = rowIndex
-          y = keyIndex
-        }
-      })
-    })
-
-    if (x != undefined && y != undefined && heatmapInstanceKed) {
-      heatmapKed[x][y] += 1
-    }
-  })
-
-  $: {
-    heatmapMnc.forEach((row, rowIndex) => {
-      row.forEach((value, colIndex) => {
-        if (value > 0) {
-          coordsMnc.push({ ...indexToCoordinate(rowIndex, colIndex), value })
-        }
-      })
-    })
-
-    heatmapInstanceMnc?.setData({ max: max(heatmapMnc), min: 0, data: coordsMnc })
   }
 
-  $: {
-    heatmapKed.forEach((row, rowIndex) => {
+  function drawHeatmap(heatmapCanvas: HTMLElement, imageElement, heatmapInstance, heatmap) {
+    const coords = []
+    const canvasWidth = imageElement?.getBoundingClientRect().width
+
+    if (heatmapCanvas && canvasWidth) {
+      heatmapCanvas.style.width = canvasWidth
+      heatmapCanvas.style.height = canvasWidth
+    }
+    let canvasRatio = 0.7 // Default width : 700px
+    if (canvasWidth) {
+      canvasRatio = canvasWidth / 1000.0
+    }
+
+    heatmap.forEach((row, rowIndex) => {
       row.forEach((value, colIndex) => {
         if (value > 0) {
-          coordsKed.push({ ...indexToCoordinate(rowIndex, colIndex), value })
+          coords.push({ ...indexToCoordinate(rowIndex, colIndex, canvasRatio), value })
         }
       })
     })
 
-    heatmapInstanceKed?.setData({ max: max(heatmapKed), min: 0, data: coordsKed })
+    // const radius = 60 * canvasRatio
+    // console.log({ radius })
+    // heatmapInstance?.configure({
+    //   container: heatmapCanvas,
+    //   radius,
+    //   maxOpacity: 0.6,
+    //   minOpacity: 0,
+    //   blur: 0.5 * canvasRatio,
+    //   gradient: {
+    //     0.45: "rgb(0,0,255)",
+    //     0.55: "rgb(0,255,255)",
+    //     0.65: "rgb(0,255,0)",
+    //     0.95: "yellow",
+    //     1.0: "rgb(255,0,0)",
+    //   },
+    // })
+    heatmapInstance?.setData({ max: max(heatmap), min: 0, data: coords })
   }
 
-  function indexToCoordinate(row: number, col: number) {
-    let xStart = [48, 146, 162, 194]
+  function adjustCanvasSize(container: HTMLElement) {
+    const canvas: HTMLCanvasElement = container?.getElementsByTagName("canvas")?.[0]
+    const img: HTMLImageElement = container?.getElementsByTagName("img")?.[0]
+    if (canvas) {
+      canvas.width = img?.getBoundingClientRect().width
+      canvas.height = img?.getBoundingClientRect().height
+    }
+  }
+
+  function indexToCoordinate(row: number, col: number, widthRatio: number = 1) {
+    let xStart = [48, 146, 162, 194].map((x) => x * widthRatio)
 
     const co = {
-      x: Math.round(xStart[row] + (60 + 4.5) * col),
-      y: Math.round(48 + (60 + 4.5) * row),
+      x: Math.round(xStart[row] + (60 + 4.5) * col * widthRatio),
+      y: Math.round(xStart[0] + (60 + 4.5) * row * widthRatio),
     }
 
     return co
@@ -191,37 +235,42 @@
     return max
   }
 
-  // function softmax(arr) {
-  //   let sum = 0
-  //   arr.forEach(function (row) {
-  //     return row.forEach(function (value) {
-  //       sum += Math.exp(value)
-  //     })
-  //   })
-
-  //   return arr.map(function (row) {
-  //     return row.map(function (value) {
-  //       return Math.exp(value) / sum
-  //     })
-  //   })
-  // }
+  function windowResizeHandler() {
+    redraw()
+  }
 </script>
+
+<svelte:window on:resize={windowResizeHandler} />
 
 <Kofi name="narze" label="Support Me" />
 <Menu items={menuItems} />
 <Head {title} {description} {url} {imageUrl} {gtagId} />
 
-<main class="w-full h-screen flex flex-col justify-center items-center">
-  <center>Manoonchai</center>
-  <div id="heatmap-container-manoonchai" style="width: 1000px; height: 400px">
-    <img src={manoonchaiSvg} alt="keymap" class="max-w-full max-h-full" />
+<main class="w-full h-screen flex flex-col items-center p-4">
+  <h1 class="text-3xl mb-2">Heatmap Analyzer</h1>
+
+  <h2 class="text-xl">Manoonchai</h2>
+  <div style="width: 700px; height: 248px;" bind:this={heatmapCanvasManoonchai}>
+    <img
+      src={manoonchaiSvg}
+      bind:this={manoonchaiImageElement}
+      alt="keymap"
+      class="max-w-full max-h-full z-0"
+    />
   </div>
 
-  <center>Kedmanee</center>
-  <div id="heatmap-container-kedmanee" style="width: 1000px; height: 400px">
-    <img src={kedmaneeSvg} alt="keymap" class="max-w-full max-h-full" />
+  <h2 class="text-xl">Kedmanee</h2>
+  <div style="width: 700px; height: 248px;" bind:this={heatmapCanvasKedmanee}>
+    <img
+      src={kedmaneeSvg}
+      bind:this={kedmaneeImageElement}
+      alt="keymap"
+      class="max-w-full max-h-full"
+    />
   </div>
-  <textarea class="border" bind:value={input} cols="80" rows="10" />
+
+  <h2 class="text-xl">Text</h2>
+  <textarea class="border m-4" bind:value={input} cols="80" rows="10" />
 </main>
 
 <style>
