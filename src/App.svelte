@@ -245,10 +245,22 @@
 
   let input = textPresets[0].text
 
-  let heatmapMnc = []
-  let heatmapKed = []
+  let heatmapMnc: number[][] = []
+  let heatmapKed: number[][] = []
 
-  let inputChars
+  let inputChars: string[]
+
+  let toggleAdditionalKey = false
+  let mncAdditionalKey = {
+    shift: 0,
+    altGr: 0,
+  }
+  let kedAdditionalKey = {
+    shift: 0,
+    altGr: 0,
+  }
+  let enterCount = 0;
+  let spaceCount = 0;
 
   $: {
     input
@@ -259,10 +271,10 @@
     inputChars = input.split("")
     resetHeatmaps()
 
-    populateHeatmap(manoonchaiKeymap, heatmapInstanceMnc, heatmapMnc)
-    populateHeatmap(kedmaneeKeymap, heatmapInstanceKed, heatmapKed)
-    drawHeatmap(heatmapCanvasManoonchai, manoonchaiImageElement, heatmapInstanceMnc, heatmapMnc)
-    drawHeatmap(heatmapCanvasKedmanee, kedmaneeImageElement, heatmapInstanceKed, heatmapKed)
+    populateHeatmap(manoonchaiKeymap, heatmapInstanceMnc, heatmapMnc, mncAdditionalKey)
+    populateHeatmap(kedmaneeKeymap, heatmapInstanceKed, heatmapKed, kedAdditionalKey)
+    drawHeatmap(heatmapCanvasManoonchai, manoonchaiImageElement, heatmapInstanceMnc, heatmapMnc, mncAdditionalKey)
+    drawHeatmap(heatmapCanvasKedmanee, kedmaneeImageElement, heatmapInstanceKed, heatmapKed, kedAdditionalKey)
   }
 
   function resetHeatmaps() {
@@ -278,28 +290,63 @@
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ]
+    mncAdditionalKey = {
+      shift: 0,
+      altGr: 0,
+    }
+    kedAdditionalKey = {
+      shift: 0,
+      altGr: 0,
+    }
+    enterCount = 0;
+    spaceCount = 0;
   }
 
-  function populateHeatmap(keymap, heatmapInstance, heatmap) {
+  function populateHeatmap(keymap: { keys: string[][][] }, heatmapInstance, heatmap: number[][], additionalKey: { shift: number, altGr: number }) {
     inputChars.forEach((char, _index) => {
-      let x, y
-
-      keymap.keys.forEach((row, rowIndex) => {
-        row.forEach((keys, keyIndex) => {
-          if (keys.includes(char)) {
-            x = rowIndex
-            y = keyIndex
-          }
-        })
-      })
-
-      if (x != undefined && y != undefined && heatmapInstance) {
-        heatmap[x][y] += 1
+      if (char === ' ') {
+        spaceCount += 1;
+        return;
       }
+      if (char === '\n') {
+        enterCount += 1;
+        return;
+      }
+
+      // using for loop with circuit breaker to speed up iteration for a lil'bit
+      // must be sure that all chars in given keymap are unique
+      for(let rowIndex in keymap.keys) {
+        let breakLoop = false;
+        keymap.keys[rowIndex].forEach((keys, keyIndex) => {
+          const tmpIndex = keys.indexOf(char);
+          if (tmpIndex !== -1) {
+            if (heatmapInstance) heatmap[rowIndex][keyIndex] += 1
+            if (tmpIndex === 1) additionalKey.shift += 1;
+            else if (tmpIndex === 2) additionalKey.altGr += 1;
+            breakLoop = true;
+            return;
+          }
+        });
+        if (breakLoop) return;
+      }
+
+      // let x, y
+      // keymap.keys.forEach((row, rowIndex) => {
+      //   row.forEach((keys, keyIndex) => {
+      //     if (keys.includes(char)) {
+      //       x = rowIndex
+      //       y = keyIndex
+      //     }
+      //   })
+      // })
+
+      // if (x != undefined && y != undefined && heatmapInstance) {
+      //   heatmap[x][y] += 1
+      // }
     })
   }
 
-  function drawHeatmap(heatmapCanvas: HTMLElement, imageElement, heatmapInstance, heatmap) {
+  function drawHeatmap(heatmapCanvas: HTMLElement, imageElement, heatmapInstance, heatmap, additionalKey: { shift: number, altGr: number }) {
     const coords = []
     const canvasWidth = imageElement?.getBoundingClientRect().width
 
@@ -319,6 +366,31 @@
         }
       })
     })
+
+
+    const specialKeyOffset = [
+      {x: 452, y: 4}, // altGr
+      {x: 589, y: 2}, // enter
+      {x:  20, y: 3}, // shift L
+      {x: 576, y: 3}, // shift R
+      {x: 282, y: 4}, // space
+    ]
+    const pushCoords = ({ x, y }, value) => {
+      coords.push({
+        x: Math.round(x + (64.5) * canvasRatio),
+        y: Math.round(35 + (64.5) * y * canvasRatio),
+        value,
+      })
+    }
+    if (toggleAdditionalKey) {
+      if (additionalKey.altGr > 0) pushCoords(specialKeyOffset[0], additionalKey.altGr)
+      if (enterCount > 0) pushCoords(specialKeyOffset[1], enterCount)
+      if (additionalKey.shift > 0) {
+        pushCoords(specialKeyOffset[2], additionalKey.shift)
+        pushCoords(specialKeyOffset[3], additionalKey.shift)
+      }
+      if (spaceCount > 0) pushCoords(specialKeyOffset[4], spaceCount)
+    }
 
     // const radius = 60 * canvasRatio
     // console.log({ radius })
@@ -407,6 +479,13 @@
 
   <h2 class="text-xl">Text</h2>
   <textarea class="border m-4" bind:value={input} cols="80" rows="10" />
+
+  <span>
+    แสดงheatmapของปุ่มนอกเหนือตัวอักษร &nbsp;
+    <input type="checkbox" bind:checked={toggleAdditionalKey}
+    on:change={() => { redraw(); }} />
+  </span>
+  
 
   เลือก Preset
   <select bind:value={selectedPreset} on:change={() => (input = selectedPreset.text)}>
